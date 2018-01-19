@@ -5,7 +5,7 @@ defmodule AccessDecisionManager do
 
   All voters set in the config are called for every `is_granted?` call.
   If the attribute and subjects are not supported by the voter, 
-  then return ":access_abstain".  
+  then return `:access_abstain`.
 
   There are three "strategies":
 
@@ -29,26 +29,38 @@ defmodule AccessDecisionManager do
   ```
   """
 
-  def is_granted?(current_user, attribute) do
-    is_granted?(current_user, attribute, current_user)
+  @doc """
+  Checks if the `attribute` is granted against the `subject`.
+
+  Example: `%User{}` (subject) is granted `ROLE_ADMIN` (attribute)
+  """
+  @spec is_granted?(subject :: struct(), attribute :: String.t) :: true | false
+  def is_granted?(subject, attribute) do
+    is_granted?(subject, attribute, subject)
   end
 
-  def is_granted?(current_user, attribute, subject) do
+  @doc """
+  Checks if the `primary_subject` is granted `attribute` against the `secondary_subject`.
+
+  Example: `%User{}` (primary subject) is granted `DELETE_COMMENTS` (attribute) on `%Blog{}` (secondary subject)
+  """
+  @spec is_granted?(primary_subject :: struct(), attribute :: String.t, secondary_subject :: struct()) :: true | false
+  def is_granted?(primary_subject, attribute, secondary_subject) do
     opts = %{voters: Application.get_env(:access_decision_manager, :voters)}
-    decide(:strategy_unanimous, opts.voters, current_user, attribute, subject)
+    decide(:strategy_unanimous, opts.voters, primary_subject, attribute, secondary_subject)
   end
 
   # This grants access as soon as there is one voter granting access.
-  defp decide(:strategy_affirmative, voters, current_user, attribute, subject) do
-    Enum.any?(voters, fn voter -> voter.vote(current_user, attribute, subject) === :access_granted end)
+  defp decide(:strategy_affirmative, voters, primary_subject, attribute, secondary_subject) do
+    Enum.any?(voters, fn voter -> voter.vote(primary_subject, attribute, secondary_subject) === :access_granted end)
   end
 
   # This only grants access once all voters grant access.
-  defp decide(:strategy_unanimous, voters, current_user, attribute, subject) do
-    !Enum.any?(voters, fn voter -> voter.vote(current_user, attribute, subject) === :access_denied end)
+  defp decide(:strategy_unanimous, voters, primary_subject, attribute, secondary_subject) do
+    !Enum.any?(voters, fn voter -> voter.vote(primary_subject, attribute, secondary_subject) === :access_denied end)
   end
 
   # # TODO: This grants access if there are more voters granting access than denying.
-  # defp decide(:strategy_consensus, voters, current_user, attribute, subject) do
+  # defp decide(:strategy_consensus, voters, primary_subject, attribute, secondary_subject) do
   # end
 end

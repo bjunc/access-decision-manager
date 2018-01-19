@@ -1,7 +1,7 @@
 defmodule AccessDecisionManager.Voter do
   @moduledoc """
-  Voters implement the Voter behavior, which means they have to implement a 
-  `vote` function to allow the decision manager to use them.
+  Voters must implement the Voter behavior, which means they have to implement a 
+  `vote` function.
   """
 
   @doc """
