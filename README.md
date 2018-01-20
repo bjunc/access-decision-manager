@@ -31,10 +31,12 @@ config :access_decision_manager,
 ```elixir
 defmodule MyApp.Voters.FooVoter do
   def vote(user, attribute) do
-    if attribute === "CREATE_FOO" do
+    cond do
+     attribute == "CREATE_FOO" ->
       is_foo_allowed = ...
       if is_foo_allowed, do: :access_granted, else: :access_denied
-    else
+      
+    true ->
       :access_abstain
     end
   end
@@ -42,7 +44,7 @@ end
 
 defmodule MyAppWeb.FooController do
   def create_foo(conn) do
-    if AccessDecisionManager.is_granted?(conn, "CREATE_FOO") do
+    if AccessDecisionManager.is_granted?(conn.assigns.current_user, "CREATE_FOO") do
       # permission granted, create some foo
     else
       # permission denied, no foo for you
