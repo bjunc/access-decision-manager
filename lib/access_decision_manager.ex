@@ -29,6 +29,8 @@ defmodule AccessDecisionManager do
   ```
   """
 
+  require Logger
+
   @doc """
   Checks if the `attribute` is granted against the `subject`.
 
@@ -46,8 +48,15 @@ defmodule AccessDecisionManager do
   """
   @spec is_granted?(primary_subject :: struct(), attribute :: String.t, secondary_subject :: struct()) :: true | false
   def is_granted?(primary_subject, attribute, secondary_subject) do
+    # start = :os.system_time(unquote(:micro_seconds))
+    
     opts = %{voters: Application.get_env(:access_decision_manager, :voters)}
     decision = decide(:strategy_affirmative, opts.voters, primary_subject, attribute, secondary_subject)
+    
+    # time_passed = :os.system_time(unquote(:micro_seconds)) - start
+    # formatted_decision = if decision, do: "GRANTED", else: "DENIED"
+    # Logger.debug "#{attribute}: #{formatted_decision} #{time_passed}μs"
+    
     decision
   end
 
