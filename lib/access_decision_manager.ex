@@ -36,7 +36,7 @@ defmodule AccessDecisionManager do
   """
   @spec is_granted?(subject :: struct(), attribute :: String.t) :: true | false
   def is_granted?(subject, attribute) do
-    is_granted?(subject, attribute, subject)
+    is_granted?(subject, attribute, nil)
   end
 
   @doc """
