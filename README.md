@@ -26,19 +26,79 @@ config :access_decision_manager,
   ]
 ```
 
-## Basics
+## Usage
 
 ```elixir
 defmodule MyApp.Voters.FooVoter do
+
+  @behaviour AccessDecisionManager.Voter
+
   def vote(user, attribute) do
     cond do
      attribute == "CREATE_FOO" ->
-      is_foo_allowed = ...
-      if is_foo_allowed, do: :access_granted, else: :access_denied
-      
+      if is_create_allowed(user), do: :access_granted, else: :access_denied
+
     true ->
       :access_abstain
     end
+  end
+
+  defp is_create_allowed(user) do
+    # your permission logic goes here (db checks, etc.)
+  end
+end
+
+defmodule MyAppWeb.FooController do
+  def create_foo(conn) do
+    if AccessDecisionManager.is_granted?(conn.assigns.current_user, "CREATE_FOO") do
+      # permission granted, create some foo
+    else
+      # permission denied, no foo for you
+    end
+  end
+end
+```
+
+```elixir
+defmodule MyApp.Voters.FooVoter do
+
+  @behaviour AccessDecisionManager.Voter
+
+  @supported_attributes [
+    "CREATE_FOO",
+    "UPDATE_FOO",
+    "DELETE_FOO"
+  ]
+
+  def vote(user, attribute) do
+    if supports(user, attribute) do
+      attribute
+      |> String.split("_")
+      |> Enum.at(0)
+      |> is_operation_allowed(user)
+
+    else
+      :access_abstain
+    end
+  end
+
+  defp supports() do
+    supports_attr = Enum.member?(@supported_attributes, attribute)
+    supports_subject = subject.__struct__ == Elixir.MyApp.Accounts.User
+    supports_attr and supports_subject
+  end
+
+  defp is_operation_allowed("CREATE", user) do
+    # your permission logic goes here (db checks, etc.)
+    :access_denied
+  end
+  defp is_operation_allowed("UPDATE", user) do
+    # your permission logic goes here (db checks, etc.)
+    :access_granted
+  end
+  defp is_operation_allowed(operation, user) do
+    # your permission logic goes here (db checks, etc.)
+    :access_denied
   end
 end
 
