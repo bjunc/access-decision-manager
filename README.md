@@ -86,7 +86,7 @@ defmodule MyApp.Voters.FooVoter do
     end
   end
 
-  defp supports() do
+  defp supports(subject, attribute) do
     supports_attr = Enum.member?(@supported_attributes, attribute)
     supports_subject = subject.__struct__ == Elixir.MyApp.Accounts.User
     supports_attr and supports_subject
