@@ -9,17 +9,17 @@ defmodule AccessDecisionManager do
 
   There are three "strategies":
 
-  `:unanimous` (default)
-  Only grant access if none of the voters have denied access.
-
-  `:affirmative`
+  `:strategy_affirmative` (default)
   Grant access as soon as there is one voter granting access.
 
-  `:consensus`
+  `:strategy_consensus`
   Grant access if there are more voters granting access than there are denying.
+
+  `:strategy_unanimous`
+  Only grant access if none of the voters have denied access.
   
   > The default (and only currently supported strategy) is `:unanimous`.  
-  > Support for `:affirmative` and `:consensus` are TBD.
+  > Support for `:strategy_affirmative` and `:strategy_consensus` are TBD.
 
   To use in pipeline:
   ```elixir
@@ -47,7 +47,8 @@ defmodule AccessDecisionManager do
   @spec is_granted?(primary_subject :: struct(), attribute :: String.t, secondary_subject :: struct()) :: true | false
   def is_granted?(primary_subject, attribute, secondary_subject) do
     opts = %{voters: Application.get_env(:access_decision_manager, :voters)}
-    decide(:strategy_unanimous, opts.voters, primary_subject, attribute, secondary_subject)
+    decision = decide(:strategy_affirmative, opts.voters, primary_subject, attribute, secondary_subject)
+    decision
   end
 
   # This grants access as soon as there is one voter granting access.
