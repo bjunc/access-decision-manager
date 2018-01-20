@@ -4,18 +4,49 @@ Voter based authorization for Elixir, inspired by Symfony.
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `access_decision_manager` to your list of dependencies in `mix.exs`:
+The package can be installed by adding `access_decision_manager` 
+to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:access_decision_manager, "~> 0.1.0"}
+    {:access_decision_manager, git: "https://github.com/bjunc/access-decision-manager.git"}
   ]
 end
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/access_decision_manager](https://hexdocs.pm/access_decision_manager).
+Add your configuration
 
+```elixir
+# Access Decision Manager (permission voting)
+config :access_decision_manager,
+  voters: [
+    MyApp.Voters.FooVoter,
+    MyApp.Voters.BarVoter,
+  ]
+```
+
+## Basics
+
+```elixir
+defmodule MyApp.Voters.FooVoter do
+  def vote(user, attribute) do
+    if attribute === "CREATE_FOO" do
+      is_foo_allowed = ...
+      if is_foo_allowed, do: :access_granted, else: :access_denied
+    else
+      :access_abstain
+    end
+  end
+end
+
+defmodule MyAppWeb.FooController do
+  def create_foo(conn) do
+    if AccessDecisionManager.is_granted?(conn, "CREATE_FOO") do
+      # permission granted, create some foo
+    else
+      # permission denied, no foo for you
+    end
+  end
+end
+```
