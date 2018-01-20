@@ -28,6 +28,8 @@ config :access_decision_manager,
 
 ## Usage
 
+### Example 1
+
 ```elixir
 defmodule MyApp.Voters.FooVoter do
 
@@ -58,6 +60,8 @@ defmodule MyAppWeb.FooController do
   end
 end
 ```
+
+### Example 2
 
 ```elixir
 defmodule MyApp.Voters.FooVoter do
