@@ -60,12 +60,14 @@ defmodule AccessDecisionManager do
     decision
   end
 
-  # This grants access as soon as there is one voter granting access.
+  # Grant access as soon as there is one voter granting access.
   defp decide(:strategy_affirmative, voters, primary_subject, attribute, secondary_subject) do
-    Enum.any?(voters, fn voter -> voter.vote(primary_subject, attribute, secondary_subject) === :access_granted end)
+    Enum.any?(voters, fn voter ->
+      voter.vote(primary_subject, attribute, secondary_subject) == :access_granted
+    end)
   end
 
-  # This only grants access once all voters grant access.
+  # Only grant access if none of the voters have denied access.
   defp decide(:strategy_unanimous, voters, primary_subject, attribute, secondary_subject) do
     !Enum.any?(voters, fn voter -> voter.vote(primary_subject, attribute, secondary_subject) === :access_denied end)
   end
