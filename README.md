@@ -31,7 +31,7 @@ config :access_decision_manager,
 ### Example 1
 
 ```elixir
-defmodule MyApp.Voters.FooVoter do
+defmodule MyApp.Auth.FooVoter do
 
   @behaviour AccessDecisionManager.Voter
 

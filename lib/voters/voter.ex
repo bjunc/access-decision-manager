@@ -2,10 +2,14 @@ defmodule AccessDecisionManager.Voter do
   @moduledoc """
   Voters must implement the Voter behavior, which means they have to implement a 
   `vote` function.
+
+  All voters set in the config are called for every `granted?` call.
+  If the attribute and subjects are not supported by the voter, 
+  then return `:access_abstain`.
   """
 
   @doc """
-  This method will do the actual voting. 
+  This method does the actual voting. 
   
   One of the following atoms must returned: 
 

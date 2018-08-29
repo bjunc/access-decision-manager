@@ -3,9 +3,11 @@ defmodule AccessDecisionManager do
   Inspired by Symfony's Access Decision Manager, "voters" are used
   to check permissions (attributes) on a subject.
 
-  All voters set in the config are called for every `granted?` call.
-  If the attribute and subjects are not supported by the voter, 
-  then return `:access_abstain`.
+  For example, you may want to check if the current user (primary subject)
+  can "DELETE_COMMENT" (attribute) a Blog (secondary subject).
+
+  Or you may simply want to check if the current user (primary subject) 
+  has "ROLE_ADMIN" (attribute).
 
   There are three "strategies":
 
@@ -18,13 +20,13 @@ defmodule AccessDecisionManager do
   `:strategy_unanimous`
   Only grant access if none of the voters have denied access.
   
-  > The default (and only currently supported strategy) is `:unanimous`.  
-  > Support for `:strategy_affirmative` and `:strategy_consensus` are TBD.
+  > The default (and only currently supported strategy) is `:strategy_affirmative`.  
+  > Support for `:strategy_unanimous` and `:strategy_consensus` are TBD.
 
   To use in pipeline:
   ```elixir
   pipeline :foo do
-    plug AccessDecisionManager.Plug, voters: [AccessDecisionManager.Voters.FooVoter]
+    plug AccessDecisionManager.Plug, voters: [MyApp.Auth.FooVoter]
   end
   ```
   """
