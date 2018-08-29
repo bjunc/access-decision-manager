@@ -52,7 +52,7 @@ end
 
 defmodule MyAppWeb.FooController do
   def create_foo(conn) do
-    if AccessDecisionManager.is_granted?(conn.assigns.current_user, "CREATE_FOO") do
+    if AccessDecisionManager.granted?(conn.assigns.current_user, "CREATE_FOO") do
       # permission granted, create some foo
     else
       # permission denied, no foo for you
@@ -108,7 +108,7 @@ end
 
 defmodule MyAppWeb.FooController do
   def create_foo(conn) do
-    if AccessDecisionManager.is_granted?(conn.assigns.current_user, "CREATE_FOO") do
+    if AccessDecisionManager.granted?(conn.assigns.current_user, "CREATE_FOO") do
       # permission granted, create some foo
     else
       # permission denied, no foo for you

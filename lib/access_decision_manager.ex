@@ -3,7 +3,7 @@ defmodule AccessDecisionManager do
   Inspired by Symfony's Access Decision Manager, "voters" are used
   to check permissions (attributes) on a subject.
 
-  All voters set in the config are called for every `is_granted?` call.
+  All voters set in the config are called for every `granted?` call.
   If the attribute and subjects are not supported by the voter, 
   then return `:access_abstain`.
 
@@ -36,9 +36,9 @@ defmodule AccessDecisionManager do
 
   Example: `%User{}` (subject) is granted `ROLE_ADMIN` (attribute)
   """
-  @spec is_granted?(subject :: struct(), attribute :: String.t) :: true | false
-  def is_granted?(subject, attribute) do
-    is_granted?(subject, attribute, nil)
+  @spec granted?(subject :: struct(), attribute :: String.t) :: true | false
+  def granted?(subject, attribute) do
+    granted?(subject, attribute, nil)
   end
 
   @doc """
@@ -46,8 +46,8 @@ defmodule AccessDecisionManager do
 
   Example: `%User{}` (primary subject) is granted `DELETE_COMMENTS` (attribute) on `%Blog{}` (secondary subject)
   """
-  @spec is_granted?(primary_subject :: struct(), attribute :: String.t, secondary_subject :: struct()) :: true | false
-  def is_granted?(primary_subject, attribute, secondary_subject) do
+  @spec granted?(primary_subject :: struct(), attribute :: String.t, secondary_subject :: struct()) :: true | false
+  def granted?(primary_subject, attribute, secondary_subject) do
     # start = :os.system_time(unquote(:micro_seconds))
     
     opts = %{voters: Application.get_env(:access_decision_manager, :voters)}
