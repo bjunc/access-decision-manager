@@ -1,4 +1,4 @@
-# AccessDecisionManager
+# Access Decision Manager
 
 [![Hex.pm Version](https://img.shields.io/hexpm/v/access_decision_manager.svg)](https://hex.pm/packages/access_decision_manager)
 [![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://hexdocs.pm/access_decision_manager/)
@@ -13,7 +13,8 @@ to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:access_decision_manager, git: "https://github.com/bjunc/access-decision-manager.git"}
+    {:access_decision_manager, "~> 0.2.0"}
+    # {:access_decision_manager, git: "https://github.com/bjunc/access-decision-manager.git"}
   ]
 end
 ```
