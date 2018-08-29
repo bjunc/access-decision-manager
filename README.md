@@ -1,5 +1,8 @@
 # AccessDecisionManager
 
+[![Hex.pm Version](https://img.shields.io/hexpm/v/access_decision_manager.svg)](https://hex.pm/packages/access_decision_manager)
+[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://hexdocs.pm/access_decision_manager/)
+
 Voter based authorization for Elixir, inspired by Symfony.
 
 ## Installation
