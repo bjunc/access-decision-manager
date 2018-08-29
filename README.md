@@ -42,14 +42,14 @@ defmodule MyApp.Auth.FooVoter do
   def vote(user, attribute) do
     cond do
      attribute == "CREATE_FOO" ->
-      if is_create_allowed(user), do: :access_granted, else: :access_denied
+      if create_allowed?(user), do: :access_granted, else: :access_denied
 
     true ->
       :access_abstain
     end
   end
 
-  defp is_create_allowed(user) do
+  defp create_allowed?(user) do
     # your permission logic goes here (db checks, etc.)
   end
 end
@@ -68,7 +68,7 @@ end
 ### Example 2
 
 ```elixir
-defmodule MyApp.Voters.FooVoter do
+defmodule MyApp.Auth.FooVoter do
 
   @behaviour AccessDecisionManager.Voter
 
