@@ -1,14 +1,24 @@
 defmodule AccessDecisionManager.MixProject do
   use Mix.Project
 
+  @version "0.2.0"
+  @github_url "https://github.com/bjunc/access-decision-manager"
+
   def project do
     [
       app: :access_decision_manager,
-      name: "Access Decision Manager",
-      version: "0.2.0",
+      description: "Voter based authorization for Elixir.",
+      version: @version,
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      package: %{
+        maintainers: ["Robert Juncosa"],
+        licenses: ["MIT"],
+        links: %{
+          "GitHub" => @github_url
+        }
+      },
       docs: [
         main: "getting-started",
         extras: [
