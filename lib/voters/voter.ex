@@ -28,7 +28,7 @@ defmodule AccessDecisionManager.Voter do
 
   Check if a user has a particular role:
 
-  `vote(current_user, "ROLE_ADMIN", current_user)`
+  `vote(current_user, "ROLE_ADMIN", nil)`
 
   > The attribute names are entirely arbitrary.  Make them up to suit your needs!
   """
