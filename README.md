@@ -39,7 +39,10 @@ defmodule MyApp.Auth.FooVoter do
 
   @behaviour AccessDecisionManager.Voter
 
-  def vote(user, attribute) do
+  @doc """
+  Is the %User{} allowed to create %Foo{}?
+  """
+  def vote(user, attribute, nil) do
     cond do
      attribute == "CREATE_FOO" ->
       if create_allowed?(user), do: :access_granted, else: :access_denied
@@ -53,7 +56,9 @@ defmodule MyApp.Auth.FooVoter do
     # your permission logic goes here (db checks, etc.)
   end
 end
+```
 
+```elixir
 defmodule MyAppWeb.FooController do
   def create_foo(conn) do
     if AccessDecisionManager.granted?(conn.assigns.current_user, "CREATE_FOO") do
@@ -70,52 +75,54 @@ end
 ```elixir
 defmodule MyApp.Auth.FooVoter do
 
+  alias MyApp.User
+  alias MyApp.Foo
+  alias MyApp.Bar
+
   @behaviour AccessDecisionManager.Voter
 
   @supported_attributes [
-    "CREATE_FOO",
-    "UPDATE_FOO",
-    "DELETE_FOO"
+    "CREATE_BAR",
+    "UPDATE_BAR",
+    "DELETE_BAR"
   ]
 
-  def vote(user, attribute) do
-    if supports(user, attribute) do
-      attribute
-      |> String.split("_")
-      |> Enum.at(0)
-      |> is_operation_allowed(user)
-
-    else
-      :access_abstain
-    end
+  @doc """
+  Is the %User{} allowed to CRUD %Bar{} on %Foo{}?
+  """
+  def vote(%User{} = user, attribute, %Foo{} = foo) when attribute in @supported_attributes do
+    op_allowed(user, attribute, foo)
   end
+  def vote(_primary_subject, _attribute, _secondary_subject), do: :access_abstain
 
-  defp supports(subject, attribute) do
-    supports_attr = Enum.member?(@supported_attributes, attribute)
-    supports_subject = subject.__struct__ == Elixir.MyApp.Accounts.User
-    supports_attr and supports_subject
-  end
-
-  defp is_operation_allowed("CREATE", user) do
-    # your permission logic goes here (db checks, etc.)
-    :access_denied
-  end
-  defp is_operation_allowed("UPDATE", user) do
+  defp op_allowed(%User{} = user, "CREATE_BAR", %Foo{} = foo) do
     # your permission logic goes here (db checks, etc.)
     :access_granted
   end
-  defp is_operation_allowed(operation, user) do
+  defp op_allowed(%User{} = user, "UPDATE_BAR", %Foo{} = foo) do
+    # your permission logic goes here (db checks, etc.)
+    :access_granted
+  end
+  defp op_allowed(%User{} = user, "DELETE_BAR", %Foo{} = foo) do
     # your permission logic goes here (db checks, etc.)
     :access_denied
   end
 end
+```
 
-defmodule MyAppWeb.FooController do
-  def create_foo(conn) do
-    if AccessDecisionManager.granted?(conn.assigns.current_user, "CREATE_FOO") do
-      # permission granted, create some foo
+```elixir
+defmodule MyAppWeb.BarController do
+
+  import AccessDecisionManager
+
+  alias MyApp.Foo
+
+  def create_bar(conn,  %{"foo_id" => foo_id}) do
+    foo = Repo.get(Foo, foo_id)
+    if granted?(conn.assigns.current_user, "CREATE_BAR", foo) do
+      # permission granted, create some foo.bar
     else
-      # permission denied, no foo for you
+      # permission denied, no foo.bar for you
     end
   end
 end
