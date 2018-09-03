@@ -22,7 +22,8 @@ defmodule AccessDecisionManager.MixProject do
       docs: [
         main: "getting-started",
         extras: [
-          "docs/getting-started.md"
+          "docs/getting-started.md",
+          "docs/access-strategy.md"
         ]
       ]
     ]

@@ -6,6 +6,14 @@ defmodule AccessDecisionManager.Voter do
   All voters set in the config are called for every `granted?` call.
   If the attribute and subjects are not supported by the voter, 
   then return `:access_abstain`.
+
+  ```elixir
+  defmodule Mypp.Auth.FooVoter do
+    @behaviour AccessDecisionManager.Voter
+    def vote(_primary_subject, _attribute, _secondary_subject), do :access_abstain
+  end
+  ```
+
   """
 
   @doc """

@@ -9,7 +9,7 @@ defmodule AccessDecisionManager do
   Or you may simply want to check if the current user (primary subject) 
   has "ROLE_ADMIN" (attribute).
 
-  All voters are called each time you use the`granted?()` function.  
+  All voters are called each time you use the `granted?()` function.  
   AccessDecisionManager then takes the responses from all voters and makes 
   the final decision (to allow or deny access to the resource) according 
   to the strategy defined.
@@ -17,10 +17,10 @@ defmodule AccessDecisionManager do
   There are three "strategies":
 
   `:strategy_affirmative` (default)  
-  This grants access as soon as there is one voter granting access;
+  This grants access as soon as there is one voter granting access.
 
   `:strategy_consensus`
-  This grants access if there are more voters granting access than denying;
+  This grants access if there are more voters granting access than denying.
 
   `:strategy_unanimous`
   This only grants access if there is no voter denying access. 

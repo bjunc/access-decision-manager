@@ -162,7 +162,7 @@ This only grants access if there is no voter denying access. If all voters absta
 > The default (and only currently supported strategy) is `:strategy_affirmative`.  
 > Support for `:strategy_unanimous` and `:strategy_consensus` are TBD.
 
-In the above scenario, both voters should grant access in order to grant access to the user to read the post. In this case, the default strategy is no longer valid and unanimous should be used instead. You can set this in the security configuration:
+In the above scenario, both voters should grant access in order to grant access to the user to read the post. In this case, the default strategy is no longer valid and `:strategy_unanimous` should be used instead. You can set this in the security configuration:
 
 ```elixir
 # config.exs
