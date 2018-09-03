@@ -1,7 +1,5 @@
 defmodule AccessDecisionManager.Plug do
-  @moduledoc """
-  
-  """
+  @moduledoc false
 
   @behaviour Plug
   
