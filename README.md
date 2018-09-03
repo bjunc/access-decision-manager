@@ -45,7 +45,7 @@ defmodule Mypp.Auth.FooVoter do
 end
 ```
 
-> Important: since _every_ voter is called, _every_ voter must return a decision.  If the attribute and subjects do not apply to the voter, then abstain from voting by returning `access_abstain`.
+> Important: since _every_ voter is called, _every_ voter must return a decision.  If the attribute and subjects do not apply to the voter, then abstain from voting by returning `:access_abstain`.
  
 
 #### Example 1
@@ -151,10 +151,10 @@ Normally, only one voter will vote at any given time (the rest will "abstain", w
 To handle these cases, the access decision manager uses an access decision strategy. You can configure this to suit your needs. There are three strategies available:
 
 `:strategy_affirmative` (default)  
-This grants access as soon as there is one voter granting access;
+This grants access as soon as there is one voter granting access.
 
 `:strategy_consensus`  
-This grants access if there are more voters granting access than denying;
+This grants access if there are more voters granting access than denying.
 
 `:strategy_unanimous`  
 This only grants access if there is no voter denying access. If all voters abstained from voting, the decision is based on the `allow_if_all_abstain` config option (which defaults to false).
