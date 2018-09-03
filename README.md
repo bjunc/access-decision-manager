@@ -14,7 +14,6 @@ to your list of dependencies in `mix.exs`:
 def deps do
   [
     {:access_decision_manager, "~> 0.2.0"}
-    # {:access_decision_manager, git: "https://github.com/bjunc/access-decision-manager.git"}
   ]
 end
 ```
