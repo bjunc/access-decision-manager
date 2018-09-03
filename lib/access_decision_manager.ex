@@ -1,7 +1,7 @@
 defmodule AccessDecisionManager do
   @moduledoc """
-  Inspired by Symfony's Access Decision Manager, "voters" are used
-  to check permissions (attributes) on a subject.
+  Inspired by Symfony's Access Decision Manager, security "voters" are a granular 
+  way of checking permissions (e.g. "can this specific user edit the given item?").
 
   For example, you may want to check if the current user (primary subject)
   can "DELETE_COMMENT" (attribute) a Blog (secondary subject).
@@ -9,26 +9,26 @@ defmodule AccessDecisionManager do
   Or you may simply want to check if the current user (primary subject) 
   has "ROLE_ADMIN" (attribute).
 
+  All voters are called each time you use the`granted?()` function.  
+  AccessDecisionManager then takes the responses from all voters and makes 
+  the final decision (to allow or deny access to the resource) according 
+  to the strategy defined.
+
   There are three "strategies":
 
-  `:strategy_affirmative` (default)
-  Grant access as soon as there is one voter granting access.
+  `:strategy_affirmative` (default)  
+  This grants access as soon as there is one voter granting access;
 
   `:strategy_consensus`
-  Grant access if there are more voters granting access than there are denying.
+  This grants access if there are more voters granting access than denying;
 
   `:strategy_unanimous`
-  Only grant access if none of the voters have denied access.
-  
+  This only grants access if there is no voter denying access. 
+  If all voters abstained from voting, the decision is based on the 
+  `allow_if_all_abstain` config option (which defaults to false).
+
   > The default (and only currently supported strategy) is `:strategy_affirmative`.  
   > Support for `:strategy_unanimous` and `:strategy_consensus` are TBD.
-
-  To use in pipeline:
-  ```elixir
-  pipeline :foo do
-    plug AccessDecisionManager.Plug, voters: [MyApp.Auth.FooVoter]
-  end
-  ```
   """
 
   require Logger
@@ -70,9 +70,9 @@ defmodule AccessDecisionManager do
   end
 
   # Only grant access if none of the voters have denied access.
-  defp decide(:strategy_unanimous, voters, primary_subject, attribute, secondary_subject) do
-    !Enum.any?(voters, fn voter -> voter.vote(primary_subject, attribute, secondary_subject) === :access_denied end)
-  end
+  # defp decide(:strategy_unanimous, voters, primary_subject, attribute, secondary_subject) do
+  #   !Enum.any?(voters, fn voter -> voter.vote(primary_subject, attribute, secondary_subject) === :access_denied end)
+  # end
 
   # # TODO: This grants access if there are more voters granting access than denying.
   # defp decide(:strategy_consensus, voters, primary_subject, attribute, secondary_subject) do

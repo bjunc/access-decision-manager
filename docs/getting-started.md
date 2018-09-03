@@ -2,6 +2,8 @@
 
 ## Config
 
+In `config.exs`
+
 ```elixir
 # Access Decision Manager (permission voting)
 config :access_decision_manager,
@@ -9,28 +11,42 @@ config :access_decision_manager,
 ```
 
 ## Voter
+
 ```elixir
 defmodule MyApp.Auth.FooVoter do
 
+  alias MyApp.User
+
   @behaviour AccessDecisionManager.Voter
+  
+  @supported_attributes [
+    "CREATE_FOO",
+    "UPDATE_FOO",
+    "DELETE_FOO"
+  ]
 
-  def vote(user, attribute) do
-    cond do
-     attribute == "CREATE_FOO" ->
-      if create_allowed?(user), do: :access_granted, else: :access_denied
-
-    true ->
-      :access_abstain
-    end
+  def vote(%User{} = user, attribute, %Foo{} = foo) when attribute in @supported_attributes do
+    op_allowed(user, attribute, foo)
   end
+  def vote(_primary_subject, _attribute, _secondary_subject), do: :access_abstain
 
-  defp create_allowed?(user) do
+  defp op_allowed(%User{} = user, "CREATE_BAR", %Foo{} = foo) do
     # your permission logic goes here (db checks, etc.)
+    :access_granted
+  end
+  defp op_allowed(%User{} = user, "UPDATE_BAR", %Foo{} = foo) do
+    # your permission logic goes here (db checks, etc.)
+    :access_granted
+  end
+  defp op_allowed(%User{} = user, "DELETE_BAR", %Foo{} = foo) do
+    # your permission logic goes here (db checks, etc.)
+    :access_granted
   end
 end
 ```
 
 ## Controller
+
 ```elixir
 defmodule MyAppWeb.FooController do
 

@@ -24,32 +24,46 @@ Add your configuration
 # Access Decision Manager (permission voting)
 config :access_decision_manager,
   voters: [
-    MyApp.Voters.FooVoter,
-    MyApp.Voters.BarVoter,
+    MyApp.Auth.FooVoter,
+    MyApp.Auth.BarVoter,
   ]
 ```
 
 ## Usage
 
-### Example 1
+Security voters are a granular way of checking permissions (e.g. "can this specific user edit the given item?").
+
+All voters are called each time you use the`granted?()` function.  AccessDecisionManager then takes the responses from all voters and makes the final decision (to allow or deny access to the resource) according to the strategy defined, which can be: `:strategy_affirmative`, `:strategy_consensus` or `:strategy_unanimous`.
+
+
+A custom voter needs to implement the `AccessDecisionManager.Voter` behavior:
+
+```elixir
+defmodule Mypp.Auth.FooVoter do
+  @behaviour AccessDecisionManager.Voter
+  def vote(_primary_subject, _attribute, _secondary_subject), do :access_abstain
+end
+```
+
+> Important: since _every_ voter is called, _every_ voter must return a decision.  If the attribute and subjects do not apply to the voter, then abstain from voting by returning `access_abstain`.
+ 
+
+#### Example 1
 
 ```elixir
 defmodule MyApp.Auth.FooVoter do
 
   @behaviour AccessDecisionManager.Voter
+  
+  alias MyApp.User
 
   @doc """
   Is the %User{} allowed to create %Foo{}?
   """
-  def vote(user, attribute, nil) do
-    cond do
-     attribute == "CREATE_FOO" ->
-      if create_allowed?(user), do: :access_granted, else: :access_denied
-
-    true ->
-      :access_abstain
-    end
+  def vote(%User{} = user, "CREATE_FOO", nil) do
+    if create_allowed?(user), do: :access_granted, else: :access_denied
   end
+  def vote(_primary_subject, _attribute, _secondary_user), do: :access_abstain
 
   defp create_allowed?(user) do
     # your permission logic goes here (db checks, etc.)
@@ -59,8 +73,11 @@ end
 
 ```elixir
 defmodule MyAppWeb.FooController do
+
+  import AccessDecisionManager
+  
   def create_foo(conn) do
-    if AccessDecisionManager.granted?(conn.assigns.current_user, "CREATE_FOO") do
+    if granted?(conn.assigns.current_user, "CREATE_FOO") do
       # permission granted, create some foo
     else
       # permission denied, no foo for you
@@ -69,7 +86,7 @@ defmodule MyAppWeb.FooController do
 end
 ```
 
-### Example 2
+#### Example 2
 
 ```elixir
 defmodule MyApp.Auth.FooVoter do
@@ -125,4 +142,33 @@ defmodule MyAppWeb.BarController do
     end
   end
 end
+```
+
+### Changing the Access Decision Strategy
+
+Normally, only one voter will vote at any given time (the rest will "abstain", which means they return `:access_abstain`). But in theory, you could make multiple voters vote for one attribute and subject. For instance, suppose you have one voter that checks if the user is a member of the site and a second one that checks if the user is older than 18.
+
+To handle these cases, the access decision manager uses an access decision strategy. You can configure this to suit your needs. There are three strategies available:
+
+`:strategy_affirmative` (default)  
+This grants access as soon as there is one voter granting access;
+
+`:strategy_consensus`  
+This grants access if there are more voters granting access than denying;
+
+`:strategy_unanimous`  
+This only grants access if there is no voter denying access. If all voters abstained from voting, the decision is based on the `allow_if_all_abstain` config option (which defaults to false).
+
+> The default (and only currently supported strategy) is `:strategy_affirmative`.  
+> Support for `:strategy_unanimous` and `:strategy_consensus` are TBD.
+
+In the above scenario, both voters should grant access in order to grant access to the user to read the post. In this case, the default strategy is no longer valid and unanimous should be used instead. You can set this in the security configuration:
+
+```elixir
+# config.exs
+config :access_decision_manager,
+  voters: [MyApp.Auth.FooVoter],
+  strategy: :strategy_unanimous,
+  allow_if_all_abstain: false
+
 ```
