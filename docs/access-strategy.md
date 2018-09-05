@@ -19,7 +19,7 @@ If all voters abstained from voting, the decision is based on the
 `allow_if_all_abstain` config option (which defaults to false).
 
 > The default (and only currently supported strategy) is `:strategy_affirmative`.  
-> Support for `:strategy_unanimous` and `:strategy_consensus` are TBD.
+> Support for `:strategy_consensus` is TBD.
 
 ### Changing the Access Decision Strategy
 

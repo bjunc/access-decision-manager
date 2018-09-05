@@ -160,7 +160,7 @@ This grants access if there are more voters granting access than denying.
 This only grants access if there is no voter denying access. If all voters abstained from voting, the decision is based on the `allow_if_all_abstain` config option (which defaults to false).
 
 > The default (and only currently supported strategy) is `:strategy_affirmative`.  
-> Support for `:strategy_unanimous` and `:strategy_consensus` are TBD.
+> Support for `:strategy_consensus` is TBD.
 
 In the above scenario, both voters should grant access in order to grant access to the user to read the post. In this case, the default strategy is no longer valid and `:strategy_unanimous` should be used instead. You can set this in the security configuration:
 
