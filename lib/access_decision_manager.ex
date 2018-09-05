@@ -71,10 +71,22 @@ defmodule AccessDecisionManager do
     end)
   end
 
-  # Only grant access if none of the voters have denied access.
-  # defp decide(:strategy_unanimous, voters, primary_subject, attribute, secondary_subject) do
-  #   !Enum.any?(voters, fn voter -> voter.vote(primary_subject, attribute, secondary_subject) === :access_denied end)
-  # end
+  # This only grants access if there is no voter denying access. 
+  # If all voters abstained from voting, the decision is based on the 
+  # `allow_if_all_abstain` config option (which defaults to false).
+  #
+  # Note, we call `any?` and `all?` seperately because `any?` stops the iteration 
+  # at the first invocation that returns a truthy value (potential performance benefit)
+  defp decide(:strategy_unanimous, voters, primary_subject, attribute, secondary_subject) do
+    any_denied? = Enum.any?(voters, fn voter -> voter.vote(primary_subject, attribute, secondary_subject) == :access_denied end)
+    if any_denied? do
+      false
+    else
+      all_abstained? = Enum.all?(voters, fn voter -> voter.vote(primary_subject, attribute, secondary_subject) == :access_abstain end)
+      allow_if_all_abstain? = get_env(:allow_if_all_abstain)
+      if all_abstained?, do: allow_if_all_abstain?, else: true
+    end
+  end
 
   # # TODO: This grants access if there are more voters granting access than denying.
   # defp decide(:strategy_consensus, voters, primary_subject, attribute, secondary_subject) do
