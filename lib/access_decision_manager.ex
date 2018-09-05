@@ -52,8 +52,10 @@ defmodule AccessDecisionManager do
   def granted?(primary_subject, attribute, secondary_subject) do
     # start = :os.system_time(unquote(:micro_seconds))
     
-    opts = %{voters: Application.get_env(:access_decision_manager, :voters)}
-    decision = decide(:strategy_affirmative, opts.voters, primary_subject, attribute, secondary_subject)
+    voters = get_env(:voters)
+    strategy = get_env(:strategy)
+
+    decision = decide(strategy, voters, primary_subject, attribute, secondary_subject)
     
     # time_passed = :os.system_time(unquote(:micro_seconds)) - start
     # formatted_decision = if decision, do: "GRANTED", else: "DENIED"
@@ -77,4 +79,9 @@ defmodule AccessDecisionManager do
   # # TODO: This grants access if there are more voters granting access than denying.
   # defp decide(:strategy_consensus, voters, primary_subject, attribute, secondary_subject) do
   # end
+
+  # helpers for retrieving module config.
+  defp get_env(:voters), do: Application.get_env(:access_decision_manager, :voters, [])
+  defp get_env(:strategy), do: Application.get_env(:access_decision_manager, :strategy, :strategy_affirmative)
+  defp get_env(:allow_if_all_abstain), do: Application.get_env(:access_decision_manager, :allow_if_all_abstain, false)
 end
