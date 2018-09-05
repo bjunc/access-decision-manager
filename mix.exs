@@ -1,7 +1,7 @@
 defmodule AccessDecisionManager.MixProject do
   use Mix.Project
 
-  @version "0.2.1"
+  @version "0.3.0"
   @github_url "https://github.com/bjunc/access-decision-manager"
 
   def project do
